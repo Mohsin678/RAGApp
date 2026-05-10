@@ -1,0 +1,40 @@
+langchain
+langchain-core
+langchain-community
+langchain-huggingface
+sentence-transformers
+streamlit
+pypdf
+python-dotenv
+langchain-chroma
+langchain-groq
+
+
+
+ context_system_q_prompt = (
+            """Given a chat history and the latest user question
+                Which might reference context in the chat history
+                formaulate a standalone question which can be understood,
+                Without the chat history.Do not answer the question
+                Just formulate it if need and otherwise return it asit
+            """
+        )
+
+        context_q_prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system",context_system_q_prompt),
+                MessagesPlaceholder("chat_history"),
+                ("human","{input}")
+            ]
+        )
+
+        history_aware_retriever = create_history_aware_retriever(llm,retriever,context_q_prompt)
+
+        system_prompt = (
+            """    
+            You are an assistant for question asnwering task
+            use the following pieces of retrieved context to answer
+            the question,If you dont know know the answer simply
+            say you dont know,use three sentence maximum and keep answer
+            concise.
+            {context}
